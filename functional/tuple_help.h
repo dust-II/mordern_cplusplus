@@ -106,6 +106,29 @@ namespace util {
         std::tuple<Elemment_T> tuple_one={elem};
         return make_repeat_tuple_impl(std::forward<std::tuple<Elemment_T>>(tuple_one), std::make_index_sequence<N>{});
     }
+    
+    template<typename Tuple>
+    void print_tuple(const Tuple& tp) {
+        std::cout << "(";
+        if constexpr (std::tuple_size_v<Tuple> > 0)
+            std::apply(
+                [](const auto& head, const auto&... tails) {
+                    std::cout << head;
+                    ((std::cout << ", " << tails), ...);
+                }, tp
+        );
+        std::cout << ")";
+    }
+    
+    template<typename Tuple, typename Fn>
+    void for_each_tuple(Tuple&& tp, Fn&& fn) {
+        std::apply(
+            [&fn](auto&&... args) {
+                (fn(std::forward<decltype(args)>(args)), ...);
+            }, 
+            std::forward<Tuple>(tp)
+        );
+    }
 }
 
 #endif //UTIL_TUPLE_HELP_H
